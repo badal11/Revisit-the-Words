@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "name": "Revisit the Words",
+  "version": "1.0",
+  "description": "A Chrome extension to fetch and store selected words with their corresponding sentences.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "browser_action": {
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png"
+    },
+    "default_title": "Revisit the Words",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html"
+}
