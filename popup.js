@@ -1,62 +1,95 @@
 // Popup script
-chrome.runtime.sendMessage({ type: "getWords" }, function(response) {
-  var wordList = document.getElementById("wordList");
-  var deleteAllBtn = document.getElementById("deleteAllBtn");
-
-  // Reverse the array of words to display newest first
-  response.words.reverse();
+document.addEventListener("DOMContentLoaded", function() {
+  const wordList = document.getElementById("wordList");
+  const deleteAllBtn = document.getElementById("deleteAllBtn");
 
   // Add event listener to the Delete All button
-  deleteAllBtn.addEventListener("click", function() {
+  deleteAllBtn.addEventListener("click", deleteAllWords);
+
+  // Load and display the word list
+  loadWordList();
+
+  // Apply dark mode theme
+  applyDarkMode();
+
+  // Function to delete all words
+  function deleteAllWords() {
     chrome.storage.local.set({ words: [] }, function() {
       wordList.innerHTML = ""; // Clear the word list
       console.log("All words deleted.");
     });
-  });
+  }
 
-  response.words.forEach(function(item) {
-    var li = document.createElement("li");
-    var word = document.createElement("span");
-    var sentence = document.createElement("span");
-    word.textContent = item.word;
-    word.classList.add("highlight");
-    sentence.innerHTML = item.sentence;
-    sentence.innerHTML = sentence.innerHTML.replace(
-      new RegExp(`\\b${item.word}\\b`, "gi"),
+  // Function to load and display the word list
+  function loadWordList() {
+    chrome.runtime.sendMessage({ type: "getWords" }, function(response) {
+      const words = response.words;
+      words.reverse(); // Display newest words first
+      words.forEach(function(item) {
+        const li = createWordListItem(item.word, item.sentence);
+        wordList.appendChild(li);
+      });
+    });
+  }
+
+  // Function to create a word list item
+  function createWordListItem(word, sentence) {
+    const li = document.createElement("li");
+    const wordSpan = document.createElement("span");
+    const sentenceSpan = document.createElement("span");
+    wordSpan.textContent = word;
+    wordSpan.classList.add("highlight");
+    sentenceSpan.innerHTML = sentence.replace(
+      new RegExp(`\\b${word}\\b`, "gi"),
       '<span class="highlight">$&</span>'
     );
-    li.appendChild(word);
+    li.appendChild(wordSpan);
     li.innerHTML += ": ";
-    li.appendChild(sentence);
-    wordList.appendChild(li);
+    li.appendChild(sentenceSpan);
 
     // Add click event listener to copy the word to clipboard
-    word.addEventListener("click", function(event) {
+    wordSpan.addEventListener("click", function(event) {
       event.stopPropagation();
-      copyToClipboard(item.word);
+      copyToClipboard(word);
     });
 
     // Add click event listener to copy the sentence to clipboard
-    sentence.addEventListener("click", function(event) {
+    sentenceSpan.addEventListener("click", function(event) {
       event.stopPropagation();
-      copyToClipboard(item.sentence);
+      copyToClipboard(sentence);
     });
 
-    // Add click event listener to copy the word to clipboard when clicking the whole li element
+    // Add click event listener to copy the word to clipboard when clicking the whole list item
     li.addEventListener("click", function(event) {
       event.stopPropagation();
-      copyToClipboard(item.word);
+      copyToClipboard(word);
     });
-  });
-});
 
-// Function to copy text to clipboard
-function copyToClipboard(text) {
-  var dummyElement = document.createElement("textarea");
-  document.body.appendChild(dummyElement);
-  dummyElement.value = text;
-  dummyElement.select();
-  document.execCommand("copy");
-  document.body.removeChild(dummyElement);
-  console.log("Text copied to clipboard: " + text);
-}
+    return li;
+  }
+
+  // Function to copy text to clipboard
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+      console.log("Text copied to clipboard: " + text);
+    }, function() {
+      console.error("Failed to copy text to clipboard.");
+    });
+  }
+
+  // Function to apply dark mode theme
+  function applyDarkMode() {
+    const body = document.body;
+    const darkModeBtn = document.getElementById("darkModeBtn");
+
+    // Toggle dark mode on button click
+    darkModeBtn.addEventListener("click", function() {
+      body.classList.toggle("dark-mode");
+    });
+
+    // Check if dark mode is enabled in browser settings
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      body.classList.add("dark-mode");
+    }
+  }
+});

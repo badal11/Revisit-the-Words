@@ -10,7 +10,8 @@
   },
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "clipboardWrite"
   ],
   "background": {
     "scripts": ["background.js"],
@@ -31,5 +32,5 @@
     "default_title": "Revisit the Words",
     "default_popup": "popup.html"
   },
-  "options_page": "options.html"
+  "options_page": "popup.html"
 }

@@ -1,10 +1,10 @@
 // Content script
 document.addEventListener("mouseup", function(event) {
-  var selectedText = window.getSelection().toString().trim();
+  const selectedText = window.getSelection().toString().trim();
   if (selectedText !== "") {
-    var wholeWord = getWholeWord(selectedText);
+    const wholeWord = getWholeWord(selectedText);
     if (wholeWord !== "") {
-      var surroundingSentence = getSurroundingSentence(wholeWord);
+      const surroundingSentence = getSurroundingSentence(wholeWord);
       if (surroundingSentence !== "") {
         chrome.runtime.sendMessage({
           type: "addWord",
@@ -21,9 +21,9 @@ document.addEventListener("mouseup", function(event) {
 });
 
 function getWholeWord(selectedText) {
-  var words = document.body.innerText.split(/\s+/);
-  var wholeWord = "";
-  for (var i = 0; i < words.length; i++) {
+  const words = document.body.innerText.split(/\s+/);
+  let wholeWord = "";
+  for (let i = 0; i < words.length; i++) {
     if (words[i].includes(selectedText)) {
       wholeWord = words[i];
       break;
@@ -33,13 +33,13 @@ function getWholeWord(selectedText) {
 }
 
 function getSurroundingSentence(selectedText) {
-  var sentence = "";
-  var selectedElement = window.getSelection().anchorNode.parentElement;
+  let sentence = "";
+  let selectedElement = window.getSelection().anchorNode.parentElement;
   while (selectedElement && selectedElement.nodeName !== "BODY") {
-    var text = selectedElement.innerText.trim();
-    var sentences = text.split(/([.?!])\s+/);
-    for (var i = sentences.length - 1; i >= 0; i--) {
-      var currentSentence = sentences[i].trim();
+    const text = selectedElement.innerText.trim();
+    const sentences = text.split(/([.?!])\s+/);
+    for (let i = sentences.length - 1; i >= 0; i--) {
+      let currentSentence = sentences[i].trim();
       if (currentSentence.includes(selectedText)) {
         currentSentence = currentSentence.replace(/<\/?mark>/g, "");
         currentSentence = currentSentence.replace(
