@@ -44,8 +44,27 @@ body {
     cursor: pointer;
   }
   
+  .word-container {
+    display: flex;
+    align-items: center;
+  }
+  
   .highlight {
     font-weight: bold;
+  }
+  
+  .delete-btn {
+    background-color: transparent;
+    color: #FFFFFF;
+    border: none;
+    font-size: 12px;
+    padding: 0;
+    margin-left: 5px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:hover {
+    color: #DD4B39;
   }
   
   .dark-mode {

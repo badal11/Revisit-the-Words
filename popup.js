@@ -35,20 +35,28 @@ document.addEventListener("DOMContentLoaded", function() {
   // Function to create a word list item
   function createWordListItem(word, sentence) {
     const li = document.createElement("li");
+    const wordContainer = document.createElement("div");
     const wordSpan = document.createElement("span");
     const sentenceSpan = document.createElement("span");
+    const deleteBtn = document.createElement("button");
+
+    wordContainer.classList.add("word-container");
     wordSpan.textContent = word;
     wordSpan.classList.add("highlight");
     sentenceSpan.innerHTML = sentence.replace(
       new RegExp(`\\b${word}\\b`, "gi"),
       '<span class="highlight">$&</span>'
     );
-    li.appendChild(wordSpan);
-    li.innerHTML += ": ";
+    deleteBtn.classList.add("delete-btn");
+    deleteBtn.innerHTML = "&#x2716;";
+
+    wordContainer.appendChild(wordSpan);
+    wordContainer.appendChild(deleteBtn);
+    li.appendChild(wordContainer);
     li.appendChild(sentenceSpan);
 
     // Add click event listener to copy the word to clipboard
-    wordSpan.addEventListener("click", function(event) {
+    wordContainer.addEventListener("click", function(event) {
       event.stopPropagation();
       copyToClipboard(word);
     });
@@ -65,6 +73,12 @@ document.addEventListener("DOMContentLoaded", function() {
       copyToClipboard(word);
     });
 
+    // Add click event listener to delete the word
+    deleteBtn.addEventListener("click", function(event) {
+      event.stopPropagation();
+      deleteWord(word, li);
+    });
+
     return li;
   }
 
@@ -77,13 +91,24 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
+  // Function to delete a word
+  function deleteWord(word, li) {
+    chrome.storage.local.get("words", function(data) {
+      const words = data.words || [];
+      const updatedWords = words.filter(item => item.word !== word);
+      chrome.storage.local.set({ words: updatedWords }, function() {
+        wordList.removeChild(li);
+        console.log("Word deleted: " + word);
+      });
+    });
+  }
+
   // Function to apply dark mode theme
   function applyDarkMode() {
     const body = document.body;
-    const darkModeBtn = document.getElementById("darkModeBtn");
 
     // Toggle dark mode on button click
-    darkModeBtn.addEventListener("click", function() {
+    deleteAllBtn.addEventListener("click", function() {
       body.classList.toggle("dark-mode");
     });
 
