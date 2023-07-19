@@ -2,9 +2,18 @@
 document.addEventListener("DOMContentLoaded", function() {
   const wordList = document.getElementById("wordList");
   const deleteAllBtn = document.getElementById("deleteAllBtn");
+  const undoBtn = document.getElementById("undoBtn");
+  const redoBtn = document.getElementById("redoBtn");
+  let previousWords = [];
 
   // Add event listener to the Delete All button
   deleteAllBtn.addEventListener("click", deleteAllWords);
+
+  // Add event listener to the Undo button
+  undoBtn.addEventListener("click", undoAction);
+
+  // Add event listener to the Redo button
+  redoBtn.addEventListener("click", redoAction);
 
   // Load and display the word list
   loadWordList();
@@ -24,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function loadWordList() {
     chrome.runtime.sendMessage({ type: "getWords" }, function(response) {
       const words = response.words;
+      previousWords = words; // Save previous words for undo/redo functionality
       words.reverse(); // Display newest words first
       words.forEach(function(item) {
         const li = createWordListItem(item.word, item.sentence);
@@ -99,7 +109,39 @@ document.addEventListener("DOMContentLoaded", function() {
       chrome.storage.local.set({ words: updatedWords }, function() {
         wordList.removeChild(li);
         console.log("Word deleted: " + word);
+        updatePreviousWords(words);
       });
+    });
+  }
+
+  // Function to update previous words for undo/redo functionality
+  function updatePreviousWords(words) {
+    previousWords = words.slice(); // Make a copy of the current words list
+  }
+
+  // Function to undo the previous action
+  function undoAction() {
+    chrome.storage.local.set({ words: previousWords }, function() {
+      wordList.innerHTML = ""; // Clear the word list
+      previousWords.reverse(); // Reverse the previous words list to display newest first
+      previousWords.forEach(function(item) {
+        const li = createWordListItem(item.word, item.sentence);
+        wordList.appendChild(li);
+      });
+      console.log("Undo action performed.");
+    });
+  }
+
+  // Function to redo the previous action
+  function redoAction() {
+    chrome.storage.local.set({ words: previousWords }, function() {
+      wordList.innerHTML = ""; // Clear the word list
+      previousWords.reverse(); // Reverse the previous words list to display newest first
+      previousWords.forEach(function(item) {
+        const li = createWordListItem(item.word, item.sentence);
+        wordList.appendChild(li);
+      });
+      console.log("Redo action performed.");
     });
   }
 

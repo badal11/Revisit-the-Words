@@ -8,9 +8,19 @@ body {
   
   .header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+  }
+  
+  .left-section {
+    display: flex;
+    align-items: center;
+  }
+  
+  .right-section {
+    display: flex;
+    align-items: center;
   }
   
   h1 {
