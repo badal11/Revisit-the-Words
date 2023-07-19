@@ -29,5 +29,34 @@ chrome.runtime.sendMessage({ type: "getWords" }, function(response) {
     li.innerHTML += ": ";
     li.appendChild(sentence);
     wordList.appendChild(li);
+
+    // Add click event listener to copy the word to clipboard
+    word.addEventListener("click", function(event) {
+      event.stopPropagation();
+      copyToClipboard(item.word);
+    });
+
+    // Add click event listener to copy the sentence to clipboard
+    sentence.addEventListener("click", function(event) {
+      event.stopPropagation();
+      copyToClipboard(item.sentence);
+    });
+
+    // Add click event listener to copy the word to clipboard when clicking the whole li element
+    li.addEventListener("click", function(event) {
+      event.stopPropagation();
+      copyToClipboard(item.word);
+    });
   });
 });
+
+// Function to copy text to clipboard
+function copyToClipboard(text) {
+  var dummyElement = document.createElement("textarea");
+  document.body.appendChild(dummyElement);
+  dummyElement.value = text;
+  dummyElement.select();
+  document.execCommand("copy");
+  document.body.removeChild(dummyElement);
+  console.log("Text copied to clipboard: " + text);
+}
