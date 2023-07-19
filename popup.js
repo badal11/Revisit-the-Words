@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const deleteAllBtn = document.getElementById("deleteAllBtn");
   const undoBtn = document.getElementById("undoBtn");
   const redoBtn = document.getElementById("redoBtn");
+  const toggleDarkModeBtn = document.getElementById("toggleDarkModeBtn");
   let previousWords = [];
 
   // Add event listener to the Delete All button
@@ -14,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Add event listener to the Redo button
   redoBtn.addEventListener("click", redoAction);
+
+  // Add event listener to the Toggle Dark Mode button
+  toggleDarkModeBtn.addEventListener("click", toggleDarkMode);
 
   // Load and display the word list
   loadWordList();
@@ -145,18 +149,25 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
+  // Function to toggle dark mode
+  function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle("dark-mode");
+    chrome.storage.local.set({ darkMode: body.classList.contains("dark-mode") }, function() {
+      console.log("Dark mode toggled.");
+    });
+  }
+
   // Function to apply dark mode theme
   function applyDarkMode() {
     const body = document.body;
 
-    // Toggle dark mode on button click
-    deleteAllBtn.addEventListener("click", function() {
-      body.classList.toggle("dark-mode");
+    // Check if dark mode preference is saved
+    chrome.storage.local.get("darkMode", function(data) {
+      const darkMode = data.darkMode;
+      if (darkMode) {
+        body.classList.add("dark-mode");
+      }
     });
-
-    // Check if dark mode is enabled in browser settings
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      body.classList.add("dark-mode");
-    }
   }
 });
