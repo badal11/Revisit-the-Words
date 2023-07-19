@@ -2,20 +2,35 @@
 document.addEventListener("mouseup", function(event) {
   var selectedText = window.getSelection().toString().trim();
   if (selectedText !== "") {
-    var surroundingSentence = getSurroundingSentence(selectedText);
-    if (surroundingSentence !== "") {
-      chrome.runtime.sendMessage({
-        type: "addWord",
-        word: selectedText,
-        sentence: surroundingSentence
-      }, function(response) {
-        if (response.success) {
-          console.log("Word added successfully!");
-        }
-      });
+    var wholeWord = getWholeWord(selectedText);
+    if (wholeWord !== "") {
+      var surroundingSentence = getSurroundingSentence(wholeWord);
+      if (surroundingSentence !== "") {
+        chrome.runtime.sendMessage({
+          type: "addWord",
+          word: wholeWord,
+          sentence: surroundingSentence
+        }, function(response) {
+          if (response.success) {
+            console.log("Word added successfully!");
+          }
+        });
+      }
     }
   }
 });
+
+function getWholeWord(selectedText) {
+  var words = document.body.innerText.split(/\s+/);
+  var wholeWord = "";
+  for (var i = 0; i < words.length; i++) {
+    if (words[i].includes(selectedText)) {
+      wholeWord = words[i];
+      break;
+    }
+  }
+  return wholeWord;
+}
 
 function getSurroundingSentence(selectedText) {
   var sentence = "";
