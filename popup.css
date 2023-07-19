@@ -6,9 +6,9 @@ body {
     padding: 10px;
   }
   
-  header {
+  .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 10px;
   }
@@ -17,6 +17,7 @@ body {
     font-size: 18px;
     margin: 0;
     padding: 0;
+    flex-grow: 1;
   }
   
   button {
