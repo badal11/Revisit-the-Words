@@ -1,6 +1,10 @@
 // Popup script
 chrome.runtime.sendMessage({ type: "getWords" }, function(response) {
   var wordList = document.getElementById("wordList");
+  
+  // Reverse the array of words to display newest first
+  response.words.reverse();
+  
   response.words.forEach(function(item) {
     var li = document.createElement("li");
     var word = document.createElement("span");
