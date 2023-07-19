@@ -96,14 +96,17 @@ document.addEventListener("DOMContentLoaded", function() {
     return li;
   }
 
-  // Function to copy text to clipboard
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(function() {
-      console.log("Text copied to clipboard: " + text);
-    }, function() {
-      console.error("Failed to copy text to clipboard.");
-    });
-  }
+// Function to copy text to clipboard
+function copyToClipboard(text) {
+  const tempTextarea = document.createElement("textarea");
+  tempTextarea.value = text.replace(/<\/?mark>/g, "");
+  document.body.appendChild(tempTextarea);
+  tempTextarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(tempTextarea);
+  console.log("Text copied to clipboard: " + text);
+}
+
 
   // Function to delete a word
   function deleteWord(word, li) {
